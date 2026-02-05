@@ -43,7 +43,8 @@ RUN ${GOROOT}/bin/go version && ${GOROOT}/bin/go env
 # other/conflicting versions of protobuf get installed as dependency
 RUN dnf -y remove protobuf
 
-RUN dnf -y install --nodocs \
+RUN dnf -y install centos-release-ceph-reef \
+    && dnf -y install --nodocs \
 	librados-devel librbd-devel libcephfs-devel \
 	/usr/bin/cc \
 	make \
