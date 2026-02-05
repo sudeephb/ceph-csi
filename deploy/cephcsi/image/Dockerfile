@@ -38,12 +38,13 @@ COPY build.env /
 RUN source /build.env && \
     ( test -n "${GO_ARCH}" && exit 0; echo -e "\n\nMissing GO_ARCH argument for building image, install Golang or run: make image-cephcsi GOARCH=amd64\n\n"; exit 1 ) && \
     mkdir -p ${GOROOT} && \
-    curl https://storage.googleapis.com/golang/go${GOLANG_VERSION}.linux-${GO_ARCH}.tar.gz | tar xzf - -C ${GOROOT} --strip-components=1
+    curl -L https://go.dev/dl/go${GOLANG_VERSION}.linux-${GO_ARCH}.tar.gz | tar xzf - -C ${GOROOT} --strip-components=1
 
 # test if the downloaded version of Golang works (different arch?)
 RUN ${GOROOT}/bin/go version && ${GOROOT}/bin/go env
 
-RUN dnf -y install --nodocs \
+RUN dnf -y install centos-release-ceph-reef \
+    && dnf -y install --nodocs \
 	librados-devel librbd-devel libcephfs-devel \
 	/usr/bin/cc \
 	make \
