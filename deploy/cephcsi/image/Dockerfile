@@ -38,11 +38,14 @@ RUN source /build.env && \
 # test if the downloaded version of Golang works (different arch?)
 RUN ${GOROOT}/bin/go version && ${GOROOT}/bin/go env
 
-RUN dnf -y install --nodocs \
-	librados-devel librbd-devel libcephfs-devel \
-	/usr/bin/cc \
-	make \
+RUN dnf -y install centos-release-ceph-reef \
+	&& dnf -y install --nodocs \
 	git \
+	make \
+	gcc \
+	librados-devel \
+	libcephfs-devel \
+	librbd-devel \
 	&& dnf clean all \
 	&& rm -rf /var/cache/yum \
     && true
