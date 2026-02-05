@@ -1020,6 +1020,14 @@ func (image *Image) SetSnapshot(snapname string) error {
 	return getError(C.rbd_snap_set(image.image, cSnapName))
 }
 
+func (image *Image) GetDataPoolId() (int64, error) {
+	if err := image.validate(imageIsOpen); err != nil {
+		return -1, err
+	}
+
+	return int64(C.rbd_get_data_pool_id(image.image)), nil
+}
+
 // GetTrashList returns a slice of TrashInfo structs, containing information about all RBD images
 // currently residing in the trash.
 func GetTrashList(ioctx *rados.IOContext) ([]TrashInfo, error) {

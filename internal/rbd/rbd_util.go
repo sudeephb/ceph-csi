@@ -606,6 +606,17 @@ func (ri *rbdImage) isInUse() (bool, error) {
 	return len(watchers) > defaultWatchers, nil
 }
 
+func (ri *rbdImage) GetDataPoolId() (int64, error) {
+	image, err := ri.open()
+	if err != nil {
+		return -1, err
+	}
+	defer image.Close()
+
+	id, err := image.GetDataPoolId()
+	return id, err
+}
+
 // checkValidImageFeatures check presence of imageFeatures parameter. It returns false when
 // there imageFeatures is present and empty.
 func checkValidImageFeatures(imageFeatures string, ok bool) bool {
@@ -1242,6 +1253,18 @@ func generateVolumeFromVolumeID(
 		}
 	}
 	err = rbdVol.getImageInfo()
+
+	dataPoolId, getDataPoolErr := rbdVol.GetDataPoolId()
+	if dataPoolId != util.InvalidPoolID && getDataPoolErr == nil {
+		dataPoolName, getDataPoolErr := util.GetPoolName(rbdVol.Monitors, cr, dataPoolId)
+		if getDataPoolErr == nil {
+			rbdVol.DataPool = dataPoolName
+		} else {
+			log.ErrorLog(ctx, "failed to get data pool name: %w", getDataPoolErr)
+		}
+	} else if getDataPoolErr != nil {
+		log.ErrorLog(ctx, "failed to get data pool id: %w", getDataPoolErr)
+	}
 
 	return rbdVol, err
 }
