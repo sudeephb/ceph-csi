@@ -1394,6 +1394,8 @@ func (cs *ControllerServer) doSnapshotClone(
 	f := []string{librbd.FeatureNameLayering, librbd.FeatureNameDeepFlatten}
 	cloneRbd.ImageFeatureSet = librbd.FeatureSetFromNames(f)
 
+	cloneRbd.DataPool = parentVol.DataPool
+
 	err := cloneRbd.Connect(cr)
 	if err != nil {
 		return cloneRbd, err
